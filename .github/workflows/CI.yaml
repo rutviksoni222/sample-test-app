@@ -43,6 +43,9 @@ jobs:
           sed -i "s/$version/${{ github.sha }}/" ./kubernetes/deployment.yaml
           cat ./kubernetes/deployment.yaml | grep image: | awk '{print $2}'
       
+      - name: Pull latest changes
+        run: git pull origin main
+
       - name: Commit and push changes
         uses: devops-infra/action-commit-push@v0.3
         with:
