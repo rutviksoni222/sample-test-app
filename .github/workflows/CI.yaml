@@ -1,0 +1,48 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: create-and-push-image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: rsoni9898/sample-test-app:${{ github.sha }}
+
+      - name: Update Version
+        run: |
+          version=$(cat ./kubernetes/deployment.yaml | grep image: | awk '{print $2}' | cut -d ':' -f 2)
+          echo "$version"
+          sed -i "s/$version/${{ github.sha }}/" ./kubernetes/deployment.yaml
+          cat ./kubernetes/deployment.yaml | grep image: | awk '{print $2}'
+      
+      - name: Commit and push changes
+        uses: devops-infra/action-commit-push@v0.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_message: Image version updated
