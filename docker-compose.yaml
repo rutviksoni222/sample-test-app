@@ -1,0 +1,6 @@
+version: "3.1"
+services:
+  nginx-test-app:
+    image: 'rajatrj16/nginx-test-app:latest'
+    ports:
+      - '90:80'
