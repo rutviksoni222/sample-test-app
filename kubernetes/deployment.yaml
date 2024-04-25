@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: nginx-test-app
-        image: rsoni9898/sample-test-app:4845ea49d419ebfc9c08750b74c7553967e90a38
+        image: rsoni9898/sample-test-app:7c271db04ea89d5ff2e72dda1f92eebc42d6e7d0
         ports:
         - containerPort: 80
 ---
